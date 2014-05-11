@@ -1,0 +1,22 @@
+{
+  "name": "rogue-girl",
+  "version": "0.0.1",
+  "authors": [
+    "Samuel Molnar <molnar.samuel@gmail.com>"
+  ],
+  "main": "dist/rouge-girl.js",
+  "description": "FactoryGirl for Javascript",
+  "keywords": [
+    "factory",
+    "ember",
+    "factory-girl"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "spec",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {}
+}
