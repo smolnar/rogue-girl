@@ -1,4 +1,4 @@
-#= require rogue_girl/global
+#= require rogue_girl/exports
 #= require rogue_girl/base
 #= require rogue_girl/builder
 #= require rogue_girl/parser
