@@ -1,0 +1,9 @@
+#= require rogue_girl/global
+#= require rogue_girl/base
+#= require rogue_girl/builder
+#= require rogue_girl/parser
+#= require rogue_girl/definition
+#= require rogue_girl/definitions
+#= require rogue_girl/attribute
+#= require rogue_girl/association
+#= require rogue_girl/drivers/ember_store_driver
