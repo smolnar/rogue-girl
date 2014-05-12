@@ -73,11 +73,14 @@ user = RogueGirl.create 'user'
 
 # Note: If you use Ember, you can do something like this
 user.get('role.name') # => 'Basic'
+user.get('role.users') # => [user]
 
 
 # Build a record with a custom association, without creating a new one
 role = RogueGirl.create 'role', name: 'Custom'
 user = RogueGirl.create 'user', role: role
+
+role.get('users') # => [user]
 ````
 
 ## On the menu
