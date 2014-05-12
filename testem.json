@@ -3,16 +3,13 @@
   "src_files": [
     "node_modules/chai/chai.js",
     "node_modules/sinon/pkg/sinon.js",
+    "bower_component/requirejs/require.js",
+    "bower_components/jquery/dist/jquery.js",
+    "bower_components/handlebars/handlebars.js",
+    "bower_components/ember/ember.js",
+    "bower_components/ember-data/ember-data.js",
+    "bower_components/ember-localstorage-adapter/localstorage_adapter.js",
     "spec/setup.js",
     "dist/*_spec.js"
-  ],
-  "launchers": {
-    "node": {
-      "command": "./node_modules/.bin/mocha -r spec/setup.js -R tap dist/*_spec.js",
-      "protocol": "tap"
-    }
-  },
-  "launch_in_dev": [
-    "node"
   ]
 }
