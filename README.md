@@ -1,6 +1,6 @@
 # RogueGirl &ndash; Javascript Factory
 
-RogueGirl is designed to be extensible by customizable drivers for building, creating and associating models.
+RogueGirl is factory for you models, objects or anything in JavaScript. 
 
 *Note: Library is currently in development state. API might change as we add new drivers or propose architecture changes.*
 
@@ -27,7 +27,6 @@ RougeGirl.define 'user', (f) ->
  f.name = 'Peter'
  
  @sequence 'number', (n) -> "Number ##{n}"
- 
 ````
 
 Do you want to have customized states of the records? Let's be dry and use traits.
@@ -46,7 +45,6 @@ RougeGirl.define 'user', (f) ->
 # Create a record with trait
 
 user = RogueGirl.create 'user', 'as admin'
- 
 ````
 
 Do you have a relation model? Don't worry, we use associations.
@@ -67,7 +65,7 @@ RougeGirl.define 'user', (f) ->
  
  @trait 'as admin', (f) ->
    @association 'role', 'as admin'
-   
+
 # ....
 
 # Build a record with association
