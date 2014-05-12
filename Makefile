@@ -1,4 +1,4 @@
-all: clean build test
+all: build test
 
 build:
 	rake compile:dist
