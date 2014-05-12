@@ -65,4 +65,8 @@ class RogueGirl.Definition.Proxy
         result
 
   association: (name) ->
-    @attributes[name] = new RogueGirl.Association(name, @base.type, arguments)
+    definition = RogueGirl.Definitions.of(name)
+
+    throw new Error("There is no definition for '#{name}'") unless definition
+
+    @attributes[name] = new RogueGirl.Association(definition.type, @base.type, arguments)

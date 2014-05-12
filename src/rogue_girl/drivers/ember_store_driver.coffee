@@ -1,21 +1,20 @@
 class RogueGirl.EmberStoreDriver
   @store: null
 
-  @create: (type, attributes) ->
-    Ember.run =>
-      EmberStoreDriver.store.push(type, attributes)
+  @build: (type, attributes) ->
+    Ember.run => EmberStoreDriver.store.createRecord(type, attributes)
 
   @find: (type, params) ->
-    Ember.run =>
-      EmberStoreDriver.store.all(type, params)
+    Ember.run => EmberStoreDriver.store.all(type, params)
 
   @save: (record) ->
-    Ember.run =>
-      record.save()
+    Ember.run => record.save()
 
-      record
+    record
 
-  @associationFor: (parent, child, target) ->
+  @translateAssociation: (relation) -> "#{relation}Id"
+
+  @createAssociation: (parent, child, target) ->
     Ember.run =>
       relation = Ember.Inflector.inflector.pluralize(target)
 

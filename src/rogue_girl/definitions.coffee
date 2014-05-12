@@ -6,3 +6,6 @@ class RogueGirl.Definitions
 
   @of: (name) ->
     RogueGirl.Definitions.definitions[name]
+
+  @clear: ->
+    RogueGirl.Definitions.definitions = {}

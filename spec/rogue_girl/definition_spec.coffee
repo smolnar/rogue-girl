@@ -51,12 +51,15 @@ describe 'RogueGirl.Definition', ->
     expect(attribute.value()).to.eql("admin_2@parker.com")
 
   it 'defines an association', ->
+    RogueGirl.define 'role', (f) ->
+      f.name = 'default'
+
     definition = new RogueGirl.Definition 'user', {}, (f) ->
       @association 'role'
 
     attribute = definition.attributes.role
 
-    expect(attribute.name).to.eql('role')
+    expect(attribute.type).to.eql('role')
     expect(attribute.target).to.eql('user')
     expect(attribute.params[0]).to.eql('role')
     expect(attribute.params.length).to.eql(1)
@@ -70,14 +73,14 @@ describe 'RogueGirl.Definition', ->
 
     attribute = definition.attributes.role
 
-    expect(attribute.name).to.eql('role')
+    expect(attribute.type).to.eql('role')
     expect(attribute.target).to.eql('user')
     expect(attribute.params[0]).to.eql('role')
     expect(attribute.params.length).to.eql(1)
 
     attribute = definition.traits.admin.role
 
-    expect(attribute.name).to.eql('role')
+    expect(attribute.type).to.eql('role')
     expect(attribute.target).to.eql('user')
     expect(attribute.params[0]).to.eql('role')
     expect(attribute.params[1]).to.eql(name: 'admin')
@@ -86,9 +89,13 @@ describe 'RogueGirl.Definition', ->
 
   describe '#buildAttributes', ->
     beforeEach ->
-      @builder = mock('RogueGirl.Builder', create: -> )
+      @driver  = mock('RogueGirl.driver', translateAssociation: (->))
+      @factory = mock('RogueGirl.Factory', create: ->)
 
     it 'builds attributes', ->
+      RogueGirl.define 'permission', (f) ->
+        f.name = 'basic'
+
       definition = new RogueGirl.Definition 'user', {}, (f) ->
         f.name = 'Peter'
 
@@ -97,10 +104,16 @@ describe 'RogueGirl.Definition', ->
 
       @record = mock(get: ->)
 
-      @builder
+      @factory
         .expects('create')
         .withExactArgs('permission')
         .returns(@record.object)
+        .once()
+
+      @driver
+        .expects('translateAssociation')
+        .withExactArgs('permission')
+        .returns('permissionId')
         .once()
 
       @record.mock
@@ -110,9 +123,9 @@ describe 'RogueGirl.Definition', ->
         .once()
 
       attributes = {}
-      callbacks = definition.buildAttributes(attributes)
+      callbacks  = definition.buildAttributes(attributes)
 
-      expect(attributes).to.eql(id: 0, name: 'Peter', email: 'peter_0@parker.com', permission: 1)
+      expect(attributes).to.eql(id: 0, name: 'Peter', email: 'peter_0@parker.com', permissionId: 1)
       expect(callbacks.length).to.eql(1)
 
     it 'builds attributes with traits', ->
@@ -127,5 +140,3 @@ describe 'RogueGirl.Definition', ->
       definition.buildAttributes(attributes, ['as admin'])
 
       expect(attributes).to.eql(id: 0, name: 'Admin', email: 'peter@parker.com')
-
-

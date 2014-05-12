@@ -1,3 +1,5 @@
+#= require spec_helper
+
 describe 'RogueGirl.Attribute', ->
   describe '#build', ->
     it 'builds an attribute with value', ->

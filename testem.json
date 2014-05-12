@@ -3,7 +3,6 @@
   "src_files": [
     "node_modules/chai/chai.js",
     "node_modules/sinon/pkg/sinon.js",
-    "dist/*.js",
     "spec/setup.js",
     "dist/*_spec.js"
   ],

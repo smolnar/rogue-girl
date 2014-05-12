@@ -35,11 +35,11 @@ describe 'RogueGirl', ->
 
   describe '#build', ->
     beforeEach ->
-      @builder = mock('RogueGirl.Builder', create: ->)
+      @builder = mock('RogueGirl.Builder', build: ->)
 
     it 'builds an record', ->
       @builder
-        .expects('create')
+        .expects('build')
         .withExactArgs('user', 'trait 1', 'trait 2', name: 'Peter')
         .once()
 
@@ -47,14 +47,14 @@ describe 'RogueGirl', ->
 
   describe '#create', ->
     beforeEach ->
-      @builder = mock('RogueGirl.Builder', create: ->)
+      @builder = mock('RogueGirl.Builder', build: ->)
       @driver  = mock('RogueGirl.driver', save: ->)
 
     it 'creates an record', ->
       @record = { id: 1, name: 'Peter' }
 
       @builder
-        .expects('create')
+        .expects('build')
         .withExactArgs('user', 'trait 1', 'trait 2', name: 'Peter')
         .returns(@record)
         .once()

@@ -3,8 +3,8 @@
 describe 'RogueGirl.Association', ->
   describe '#build', ->
     beforeEach ->
-      @driver  = mock('RogueGirl.driver', create: (->), associationFor: (->))
-      @builder = mock('RogueGirl.Builder', create: ->)
+      @factory = mock('RogueGirl.Factory', create: ->)
+      @driver  = mock('RogueGirl.driver', translateAssociation: (->), createAssociation: (->))
 
     it 'builds an association with new record', ->
       @parent = mock(get: ->)
@@ -12,7 +12,7 @@ describe 'RogueGirl.Association', ->
 
       association = new RogueGirl.Association('role', 'user', ['role'])
 
-      @builder
+      @factory
         .expects('create')
         .withExactArgs('role')
         .returns(@parent.object)
@@ -25,14 +25,20 @@ describe 'RogueGirl.Association', ->
         .once()
 
       @driver
-        .expects('associationFor')
+        .expects('translateAssociation')
+        .withExactArgs('role')
+        .returns('roleId')
+        .once()
+
+      @driver
+        .expects('createAssociation')
         .withExactArgs(@parent.object, @child.object, 'user')
         .once(0)
 
       attributes = {}
-      callback = association.build(attributes)
+      callback   = association.build(attributes)
 
-      expect(attributes).to.eql(role: 1)
+      expect(attributes).to.eql(roleId: 1)
       expect(typeof callback).to.eql('function')
 
       callback(@child.object)
@@ -43,7 +49,7 @@ describe 'RogueGirl.Association', ->
 
       association = new RogueGirl.Association('role', 'user', ['role', 'as admin', name: 'Admin'])
 
-      @builder
+      @factory
         .expects('create')
         .withExactArgs('role', 'as admin', name: 'Admin')
         .returns(@parent.object)
@@ -56,14 +62,19 @@ describe 'RogueGirl.Association', ->
         .once()
 
       @driver
-        .expects('associationFor')
+        .expects('translateAssociation')
+        .withExactArgs('role')
+        .returns('roleId')
+
+      @driver
+        .expects('createAssociation')
         .withExactArgs(@parent.object, @child.object, 'user')
         .once()
 
       attributes = {}
-      callback = association.build(attributes)
+      callback   = association.build(attributes)
 
-      expect(attributes).to.eql(role: 1)
+      expect(attributes).to.eql(roleId: 1)
       expect(typeof callback).to.eql('function')
 
       callback(@child.object)
@@ -72,25 +83,51 @@ describe 'RogueGirl.Association', ->
       @parent = mock(get: ->)
       @child  = mock(get: ->)
 
-      association = new RogueGirl.Association('role', 'user', ['role', name: 'Admin'])
+      association = new RogueGirl.Association('role', 'user', ['role', 'as admin', name: 'Admin'])
 
       @parent.mock
         .expects('get')
         .withExactArgs('id')
-        .returns(1)
+        .returns(2)
         .once()
 
       @driver
-        .expects('associationFor')
+        .expects('translateAssociation')
+        .withExactArgs('role')
+        .returns('roleId')
+
+      @driver
+        .expects('createAssociation')
         .withExactArgs(@parent.object, @child.object, 'user')
         .once()
 
       attributes = { role: @parent.object }
       callback = association.build(attributes)
 
-      expect(attributes).to.eql(role: 1)
+      expect(attributes).to.eql(roleId: 2)
       expect(typeof callback).to.eql('function')
 
       callback(@child.object)
 
+    context 'when parent has no id property', ->
+      it 'throws an error', ->
+        @parent = mock(get: ->)
+        @child  = mock(get: ->)
 
+        association = new RogueGirl.Association('role', 'user', ['role', 'as admin', name: 'Admin'])
+
+        attributes = {}
+
+        @factory
+          .expects('create')
+          .withExactArgs('role', 'as admin', name: 'Admin')
+          .returns(@parent.object)
+          .once()
+
+        @parent.mock
+          .expects('get')
+          .withExactArgs('id')
+          .returns(null)
+          .once()
+
+        expect(-> association.build(attributes)).to.throw(Error, /Could not resolve 'parent_id'/)

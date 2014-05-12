@@ -1,22 +1,21 @@
 class RogueGirl.Builder
-  @build: (type, attributes, traits) ->
-    definition = RogueGirl.Definitions.of(type)
-
-    throw new Error("There is not definition for #{type}") unless definition
-
-    definition.buildAttributes(attributes, traits)
-
-  @create: ->
+  @build: ->
     params = RogueGirl.Parser.parse(arguments)
 
+    name       = params.name
     type       = params.type
     traits     = params.traits
     attributes = params.attributes
-
-    callbacks = RogueGirl.Builder.build(type, attributes, traits)
-
-    record = RogueGirl.driver.create(type, attributes)
+    callbacks  = RogueGirl.Builder.populate(name, attributes, traits)
+    record     = RogueGirl.Factory.build(type, attributes)
 
     callback(record) for callback in callbacks
 
     record
+
+  @populate: (name, attributes, traits) ->
+    definition = RogueGirl.Definitions.of(name)
+
+    throw new Error("There is no definition for '#{name}'") unless definition
+
+    definition.buildAttributes(attributes, traits)

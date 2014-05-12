@@ -1,18 +1,11 @@
 class exports.RogueGirl
   @driver: null
 
-  @find: (name, params) ->
-    RogueGirl.driver.find(name, params)
+  @define: -> RogueGirl.Factory.define.apply(null, arguments)
+  @build:  -> RogueGirl.Factory.build.apply(null, arguments)
+  @create: -> RogueGirl.Factory.create.apply(null, arguments)
 
-  @build: ->
-    RogueGirl.Builder.create.apply(null, arguments)
-
-  @create: ->
-    record = RogueGirl.build.apply(null, arguments)
-
-    RogueGirl.driver.save(record)
-
-    record
+  @find: (name, params) -> RogueGirl.driver.find(name, params)
 
   @define: ->
     name     = arguments[0]

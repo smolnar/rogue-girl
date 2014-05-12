@@ -1,5 +1,6 @@
 #= require rogue_girl/exports
 #= require rogue_girl/base
+#= require rogue_girl/factory
 #= require rogue_girl/builder
 #= require rogue_girl/parser
 #= require rogue_girl/definition
