@@ -83,6 +83,24 @@ user = RogueGirl.create 'user', role: role
 role.get('users') # => [user]
 ````
 
+## Development
+
+Node and Bower are required.
+
+Install Node and Bower packages.
+
+```
+node install && bower install
+```
+
+Build and run tests
+
+```
+make all
+```
+
+Open `localhost:7357` and enjoy.
+
 ## On the menu
 
 * Before and After callbacks
