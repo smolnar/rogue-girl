@@ -1,20 +1,31 @@
 class RogueGirl.EmberStoreDriver
-  @store: null
+  app:   null
+  store: null
 
-  @build: (type, attributes) ->
-    Ember.run => EmberStoreDriver.store.createRecord(type, attributes)
+  constructor: (app) ->
+    throw new Error('You have to provide a valid application') unless app
 
-  @find: (type, params) ->
-    Ember.run => EmberStoreDriver.store.all(type, params)
+    @app   = app
+    @store = @app.__container__.lookup('store:main')
 
-  @save: (record) ->
+    throw new Error('You have to provide a valid store') unless @store
+
+  build: (type, attributes) ->
+    # TODO (smolnar) figure out how to only initialize record with Ember
+    Ember.run => @store.createRecord(type, attributes)
+
+  find: (type, params) ->
+    Ember.run => @store.find(type, params)
+
+  save: (record) ->
     Ember.run => record.save()
 
     record
 
-  @translateAssociation: (relation) -> "#{relation}Id"
+  translateAssociation: (relation) ->
+    "#{relation}Id"
 
-  @createAssociation: (parent, child, target) ->
+  createAssociation: (parent, child, target) ->
     Ember.run =>
       relation = Ember.Inflector.inflector.pluralize(target)
 

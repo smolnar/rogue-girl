@@ -7,10 +7,6 @@ exports = typeof(global) !== 'undefined' ? global : this
 
     RogueGirl.driver = null;
 
-    RogueGirl.define = function() {
-      return RogueGirl.Factory.define.apply(null, arguments);
-    };
-
     RogueGirl.build = function() {
       return RogueGirl.Factory.build.apply(null, arguments);
     };
@@ -72,7 +68,7 @@ exports = typeof(global) !== 'undefined' ? global : this
       traits = params.traits;
       attributes = params.attributes;
       callbacks = RogueGirl.Builder.populate(name, attributes, traits);
-      record = RogueGirl.Factory.build(type, attributes);
+      record = RogueGirl.driver.build(type, attributes);
       for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
         callback = callbacks[_i];
         callback(record);
@@ -321,27 +317,38 @@ exports = typeof(global) !== 'undefined' ? global : this
 }).call(this);
 (function() {
   RogueGirl.EmberStoreDriver = (function() {
-    function EmberStoreDriver() {}
+    EmberStoreDriver.prototype.app = null;
 
-    EmberStoreDriver.store = null;
+    EmberStoreDriver.prototype.store = null;
 
-    EmberStoreDriver.build = function(type, attributes) {
+    function EmberStoreDriver(app) {
+      if (!app) {
+        throw new Error('You have to provide a valid application');
+      }
+      this.app = app;
+      this.store = this.app.__container__.lookup('store:main');
+      if (!this.store) {
+        throw new Error('You have to provide a valid store');
+      }
+    }
+
+    EmberStoreDriver.prototype.build = function(type, attributes) {
       return Ember.run((function(_this) {
         return function() {
-          return EmberStoreDriver.store.createRecord(type, attributes);
+          return _this.store.createRecord(type, attributes);
         };
       })(this));
     };
 
-    EmberStoreDriver.find = function(type, params) {
+    EmberStoreDriver.prototype.find = function(type, params) {
       return Ember.run((function(_this) {
         return function() {
-          return EmberStoreDriver.store.all(type, params);
+          return _this.store.find(type, params);
         };
       })(this));
     };
 
-    EmberStoreDriver.save = function(record) {
+    EmberStoreDriver.prototype.save = function(record) {
       Ember.run((function(_this) {
         return function() {
           return record.save();
@@ -350,13 +357,11 @@ exports = typeof(global) !== 'undefined' ? global : this
       return record;
     };
 
-    EmberStoreDriver.associationFor = function(attributes, options) {
-      var child, child_type, parent, parent_type;
-      parent = options.parent;
-      child = options.child;
-      parent_type = parent.constructor.typeKey;
-      child_type = child.constructor.typeKey;
-      child.set(parent_type, parent);
+    EmberStoreDriver.prototype.translateAssociation = function(relation) {
+      return "" + relation + "Id";
+    };
+
+    EmberStoreDriver.prototype.createAssociation = function(parent, child, target) {
       return Ember.run((function(_this) {
         return function() {
           var relation;

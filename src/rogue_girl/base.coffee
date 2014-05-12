@@ -1,7 +1,6 @@
 class exports.RogueGirl
   @driver: null
 
-  @define: -> RogueGirl.Factory.define.apply(null, arguments)
   @build:  -> RogueGirl.Factory.build.apply(null, arguments)
   @create: -> RogueGirl.Factory.create.apply(null, arguments)
 

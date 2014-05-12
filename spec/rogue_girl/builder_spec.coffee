@@ -39,7 +39,8 @@ describe 'RogueGirl.Builder', ->
 
   describe '#build', ->
     beforeEach ->
-      @factory = mock('RogueGirl.Factory', build: (->), create: (->))
+      @factory = mock('RogueGirl.Factory', create: (->))
+      @driver  = mock('RogueGirl.driver', build: (->), translateAssociation: (->), createAssociation: (->))
 
     it 'builds record', ->
       RogueGirl.define 'user', (f) ->
@@ -50,7 +51,7 @@ describe 'RogueGirl.Builder', ->
           f.permission = 'super'
           f.role       = 'admin'
 
-      @factory
+      @driver
         .expects('build')
         .withExactArgs('user', id: 0, name: 'Peter', email: 'peter@peter.com')
         .once()
@@ -68,7 +69,7 @@ describe 'RogueGirl.Builder', ->
         @trait 'with role', (f) ->
           f.role = 'admin'
 
-      @factory
+      @driver
         .expects('build')
         .withExactArgs('user', id: 0, name: 'Peter', email: 'peter@peter.com', permission: 'super', role: 'admin')
         .once()
@@ -83,7 +84,7 @@ describe 'RogueGirl.Builder', ->
         @trait 'with permissions', (f) ->
           f.permission = 'super'
 
-      @factory
+      @driver
         .expects('build')
         .withExactArgs('user', id: 0, name: 'John', email: 'peter@peter.com', permission: 'basic')
 
@@ -98,14 +99,14 @@ describe 'RogueGirl.Builder', ->
           f.permission = 'super'
           @sequence 'role', (n) -> "admin #{n}"
 
-      @factory
+      @driver
         .expects('build')
         .withExactArgs('user', id: 0, name: 'Peter 0', email: 'peter_0@peter.com', permission: 'super', role: 'admin 0')
         .once()
 
       user = RogueGirl.Builder.build 'user', 'with permissions'
 
-      @factory
+      @driver
         .expects('build')
         .withExactArgs('user', id: 1, name: 'Peter 1', email: 'peter_1@peter.com', permission: 'super', role: 'admin 1')
         .once()
@@ -113,8 +114,6 @@ describe 'RogueGirl.Builder', ->
       user = RogueGirl.Builder.build 'user', 'with permissions'
 
     it 'builds record with association', ->
-      @driver = mock('RogueGirl.driver', translateAssociation: (->), createAssociation: (->))
-
       RogueGirl.define 'role', (f) ->
         f.name = 'default'
 
@@ -126,7 +125,7 @@ describe 'RogueGirl.Builder', ->
 
       @user = { id: 0, name: 'Peter 0', email: 'peter_0@peter.com', roleId: 0 }
 
-      @factory
+      @driver
         .expects('build')
         .withExactArgs('user', id: 0, name: 'Peter 0', email: 'peter_0@peter.com', roleId: 0)
         .returns(@user)
@@ -160,8 +159,6 @@ describe 'RogueGirl.Builder', ->
       RogueGirl.Builder.build 'user'
 
     it 'creates associations with custom object', ->
-      @driver = mock('RogueGirl.driver', translateAssociation: (->), createAssociation: (->))
-
       RogueGirl.define 'role', (f) ->
         f.name = 'default'
 
@@ -184,7 +181,7 @@ describe 'RogueGirl.Builder', ->
 
       @user = { id: 0, name: 'Peter 0', email: 'peter_0@peter.com', roleId: 20 }
 
-      @factory
+      @driver
         .expects('build')
         .withExactArgs('user', id: 0, name: 'Peter 0', email: 'peter_0@peter.com', roleId: 20)
         .returns(@user)

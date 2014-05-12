@@ -1,5 +1,6 @@
 #= require spec_helper
 #= require_tree ./rogue_girl
+#= require_tree ./features
 
 describe 'RogueGirl', ->
   describe '#define', ->

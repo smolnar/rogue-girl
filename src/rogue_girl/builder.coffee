@@ -7,7 +7,7 @@ class RogueGirl.Builder
     traits     = params.traits
     attributes = params.attributes
     callbacks  = RogueGirl.Builder.populate(name, attributes, traits)
-    record     = RogueGirl.Factory.build(type, attributes)
+    record     = RogueGirl.driver.build(type, attributes)
 
     callback(record) for callback in callbacks
 
