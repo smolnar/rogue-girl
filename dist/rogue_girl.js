@@ -1,3 +1,4 @@
+// TODO (smolnar) examine other global exports
 exports = typeof(global) !== 'undefined' ? global : this
 ;
 (function() {
@@ -6,19 +7,20 @@ exports = typeof(global) !== 'undefined' ? global : this
 
     RogueGirl.driver = null;
 
-    RogueGirl.find = function(name, params) {
-      return RogueGirl.driver.find(name, params);
+    RogueGirl.define = function() {
+      return RogueGirl.Factory.define.apply(null, arguments);
     };
 
     RogueGirl.build = function() {
-      return RogueGirl.Builder.create.apply(null, arguments);
+      return RogueGirl.Factory.build.apply(null, arguments);
     };
 
     RogueGirl.create = function() {
-      var record;
-      record = RogueGirl.build.apply(null, arguments);
-      RogueGirl.driver.save(record);
-      return record;
+      return RogueGirl.Factory.create.apply(null, arguments);
+    };
+
+    RogueGirl.find = function(name, params) {
+      return RogueGirl.driver.find(name, params);
     };
 
     RogueGirl.define = function() {
@@ -35,31 +37,56 @@ exports = typeof(global) !== 'undefined' ? global : this
 
 }).call(this);
 (function() {
+  RogueGirl.Factory = (function() {
+    function Factory() {}
+
+    Factory.build = function() {
+      return RogueGirl.Builder.build.apply(null, arguments);
+    };
+
+    Factory.create = function() {
+      var record;
+      record = RogueGirl.build.apply(null, arguments);
+      RogueGirl.driver.save(record);
+      return record;
+    };
+
+    Factory.createAssociation = function() {
+      return RogueGirl.driver.associationFor.apply(null, arguments);
+    };
+
+    return Factory;
+
+  })();
+
+}).call(this);
+(function() {
   RogueGirl.Builder = (function() {
     function Builder() {}
 
-    Builder.build = function(type, attributes, traits) {
-      var definition;
-      definition = RogueGirl.Definitions.of(type);
-      if (!definition) {
-        throw new Error("There is not definition for " + type);
-      }
-      return definition.buildAttributes(attributes, traits);
-    };
-
-    Builder.create = function() {
-      var attributes, callback, callbacks, params, record, traits, type, _i, _len;
+    Builder.build = function() {
+      var attributes, callback, callbacks, name, params, record, traits, type, _i, _len;
       params = RogueGirl.Parser.parse(arguments);
+      name = params.name;
       type = params.type;
       traits = params.traits;
       attributes = params.attributes;
-      callbacks = RogueGirl.Builder.build(type, attributes, traits);
-      record = RogueGirl.driver.create(type, attributes);
+      callbacks = RogueGirl.Builder.populate(name, attributes, traits);
+      record = RogueGirl.Factory.build(type, attributes);
       for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
         callback = callbacks[_i];
         callback(record);
       }
       return record;
+    };
+
+    Builder.populate = function(name, attributes, traits) {
+      var definition;
+      definition = RogueGirl.Definitions.of(name);
+      if (!definition) {
+        throw new Error("There is no definition for '" + name + "'");
+      }
+      return definition.buildAttributes(attributes, traits);
     };
 
     return Builder;
@@ -72,11 +99,16 @@ exports = typeof(global) !== 'undefined' ? global : this
     function Parser() {}
 
     Parser.parse = function(params) {
-      var attributes, key, param, traits, type, value, _i, _len, _ref;
-      type = params[0];
+      var attributes, index, key, name, options, param, traits, type, value, _i, _len, _ref;
+      name = params[0];
+      if (typeof params[1] === 'object' && (params[1].type != null)) {
+        options = params[1];
+      }
+      type = (options != null ? options.type : void 0) || name;
       traits = [];
       attributes = {};
-      _ref = Array.prototype.slice.call(params, [1, params.length - 1]);
+      index = options != null ? 2 : 1;
+      _ref = Array.prototype.slice.apply(params, [index, params.length]);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         param = _ref[_i];
         if (typeof param === 'string') {
@@ -89,6 +121,7 @@ exports = typeof(global) !== 'undefined' ? global : this
         }
       }
       return {
+        name: name,
         type: type,
         traits: traits,
         attributes: attributes
@@ -189,7 +222,12 @@ exports = typeof(global) !== 'undefined' ? global : this
     };
 
     Proxy.prototype.association = function(name) {
-      return this.attributes[name] = new RogueGirl.Association(name, this.base.type, arguments);
+      var definition;
+      definition = RogueGirl.Definitions.of(name);
+      if (!definition) {
+        throw new Error("There is no definition for '" + name + "'");
+      }
+      return this.attributes[name] = new RogueGirl.Association(definition.type, this.base.type, arguments);
     };
 
     return Proxy;
@@ -209,6 +247,10 @@ exports = typeof(global) !== 'undefined' ? global : this
 
     Definitions.of = function(name) {
       return RogueGirl.Definitions.definitions[name];
+    };
+
+    Definitions.clear = function() {
+      return RogueGirl.Definitions.definitions = {};
     };
 
     return Definitions;
@@ -245,24 +287,29 @@ exports = typeof(global) !== 'undefined' ? global : this
 }).call(this);
 (function() {
   RogueGirl.Association = (function() {
-    function Association(name, target, params) {
-      this.name = name;
+    function Association(type, target, params) {
+      this.type = type;
       this.target = target;
       this.params = params;
     }
 
     Association.prototype.build = function(attributes) {
-      var parent;
+      var parent, parent_id;
       parent = null;
-      if (attributes[this.name]) {
-        parent = attributes[this.name];
+      if (attributes[this.type]) {
+        parent = attributes[this.type];
+        delete attributes[this.type];
       } else {
-        parent = RogueGirl.Builder.create.apply(null, this.params);
+        parent = RogueGirl.Factory.create.apply(null, this.params);
       }
-      attributes[this.name] = parent.get('id');
+      parent_id = parent.get('id');
+      if (parent_id == null) {
+        throw new Error("Could not resolve 'parent_id' for #" + parent);
+      }
+      attributes[RogueGirl.driver.translateAssociation(this.type)] = parent_id;
       return (function(_this) {
         return function(child) {
-          return RogueGirl.driver.associationFor(parent, child, _this.target);
+          return RogueGirl.driver.createAssociation(parent, child, _this.target);
         };
       })(this);
     };
@@ -278,10 +325,10 @@ exports = typeof(global) !== 'undefined' ? global : this
 
     EmberStoreDriver.store = null;
 
-    EmberStoreDriver.create = function(type, attributes) {
+    EmberStoreDriver.build = function(type, attributes) {
       return Ember.run((function(_this) {
         return function() {
-          return EmberStoreDriver.store.push(type, attributes);
+          return EmberStoreDriver.store.createRecord(type, attributes);
         };
       })(this));
     };
@@ -295,15 +342,21 @@ exports = typeof(global) !== 'undefined' ? global : this
     };
 
     EmberStoreDriver.save = function(record) {
-      return Ember.run((function(_this) {
+      Ember.run((function(_this) {
         return function() {
-          record.save();
-          return record;
+          return record.save();
         };
       })(this));
+      return record;
     };
 
-    EmberStoreDriver.associationFor = function(parent, child, target) {
+    EmberStoreDriver.associationFor = function(attributes, options) {
+      var child, child_type, parent, parent_type;
+      parent = options.parent;
+      child = options.child;
+      parent_type = parent.constructor.typeKey;
+      child_type = child.constructor.typeKey;
+      child.set(parent_type, parent);
       return Ember.run((function(_this) {
         return function() {
           var relation;
