@@ -1,4 +1,4 @@
-# RogueGirl &ndash; Javascript Factory
+# RogueGirl &ndash; JavaScript Factory
 
 RogueGirl is factory for you models, objects or anything in JavaScript following similar, full-features usage of [FactoryGirl](https://github.com/thoughtbot/factory_girl).
 
