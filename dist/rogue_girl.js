@@ -298,7 +298,7 @@ exports = typeof(global) !== 'undefined' ? global : this
       } else {
         parent = RogueGirl.Factory.create.apply(null, this.params);
       }
-      parent_id = parent.get('id');
+      parent_id = parent.id != null ? parent.id : typeof parent.get === "function" ? parent.get('id') : void 0;
       if (parent_id == null) {
         throw new Error("Could not resolve 'parent_id' for #" + parent);
       }

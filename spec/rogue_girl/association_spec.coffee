@@ -111,9 +111,6 @@ describe 'RogueGirl.Association', ->
 
     context 'when parent has no id property', ->
       it 'throws an error', ->
-        @parent = mock(get: ->)
-        @child  = mock(get: ->)
-
         association = new RogueGirl.Association('role', 'user', ['role', 'as admin', name: 'Admin'])
 
         attributes = {}
@@ -121,13 +118,7 @@ describe 'RogueGirl.Association', ->
         @factory
           .expects('create')
           .withExactArgs('role', 'as admin', name: 'Admin')
-          .returns(@parent.object)
-          .once()
-
-        @parent.mock
-          .expects('get')
-          .withExactArgs('id')
-          .returns(null)
+          .returns({})
           .once()
 
         expect(-> association.build(attributes)).to.throw(Error, /Could not resolve 'parent_id'/)

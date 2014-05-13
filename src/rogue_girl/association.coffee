@@ -14,7 +14,7 @@ class RogueGirl.Association
     else
       parent = RogueGirl.Factory.create.apply(null, @params)
 
-    parent_id = parent.get('id')
+    parent_id = if parent.id? then parent.id else parent.get?('id')
 
     throw new Error("Could not resolve 'parent_id' for ##{parent}") unless parent_id?
 
