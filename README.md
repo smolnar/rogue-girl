@@ -2,6 +2,8 @@
 
 RogueGirl is a factory for your models, objects or anything in JavaScript following similar, full-features usage of [FactoryGirl](https://github.com/thoughtbot/factory_girl).
 
+Currently, only Ember.js models are supported.
+
 *Note: Library is currently in development state. API might change as we add new drivers or propose architecture changes.*
 
 ## Features
