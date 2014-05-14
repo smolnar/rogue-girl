@@ -4,8 +4,6 @@ RogueGirl is a factory for your models, objects or anything in JavaScript follow
 
 Currently, only Ember.js models are supported.
 
-*Note: Library is currently in development state. API might change as we add new drivers or propose architecture changes.*
-
 ## Features
 
 Let's define a model &ndash; *User*.
@@ -14,8 +12,6 @@ Let's define a model &ndash; *User*.
 RougeGirl.define 'user', (f) ->
  f.name = 'Peter'
  
-# ...
-
 # Let's create records
 user = RogueGirl.create 'user'
 user = RogueGirl.create 'user', name: 'Josh'
@@ -42,8 +38,6 @@ RougeGirl.define 'user', (f) ->
  @trait 'as admin', (f) ->
    f.name = 'Admin'
    
-# ...
-
 # Create a record with trait
 
 user = RogueGirl.create 'user', 'as admin'
@@ -58,7 +52,6 @@ RogueGirl.define 'role', (f) ->
   @trait 'as admin', ->
     f.name = 'Admin'
 
-# ....
     
 RougeGirl.define 'user', (f) ->
  f.name = 'Peter'
@@ -67,8 +60,6 @@ RougeGirl.define 'user', (f) ->
  
  @trait 'as admin', (f) ->
    @association 'role', 'as admin'
-
-# ....
 
 # Build a record with association
 user = RogueGirl.create 'user'
