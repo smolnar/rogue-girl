@@ -33,6 +33,27 @@ exports = typeof(global) !== 'undefined' ? global : this
 
 }).call(this);
 (function() {
+  RogueGirl.VERSION = (function() {
+    function VERSION() {}
+
+    VERSION.MAJOR = 0;
+
+    VERSION.MINOR = 0;
+
+    VERSION.PATCH = 1;
+
+    VERSION.PRE = 'beta';
+
+    VERSION.STRING = function() {
+      return "" + RogueGirl.VERSION.MAJOR + "." + RogueGirl.VERSION.MINOR + "." + RogueGirl.VERSION.PATCH + "." + RogueGirl.VERSION.PRE;
+    };
+
+    return VERSION;
+
+  })();
+
+}).call(this);
+(function() {
   RogueGirl.Factory = (function() {
     function Factory() {}
 
