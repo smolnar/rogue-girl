@@ -4,6 +4,7 @@ namespace :compile do
   assets = Sprockets::Environment.new
   assets.append_path 'src'
   assets.append_path 'spec'
+  assets.append_path 'vendor'
 
   desc 'Compiles files for distribution'
   task :dist do
