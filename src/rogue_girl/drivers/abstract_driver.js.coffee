@@ -6,7 +6,7 @@ class RogueGirl.AbstractDriver
     associations = []
 
     for name, value of attributes
-      if value.__association__?
+      if value? && value.__association__?
         associations.push(value.__association__)
 
         delete attributes[name]
