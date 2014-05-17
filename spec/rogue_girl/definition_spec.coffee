@@ -137,7 +137,7 @@ describe 'RogueGirl.Definition', ->
       callbacks  = definition.buildAttributes(attributes)
 
       expect(attributes).to.eql(
-        id: 0
+        id: 1
         name: 'Peter'
         email: 'peter_0@parker.com'
         permission:
@@ -159,4 +159,4 @@ describe 'RogueGirl.Definition', ->
       attributes = {}
       definition.buildAttributes(attributes, ['as admin'])
 
-      expect(attributes).to.eql(id: 0, name: 'Admin', email: 'peter@parker.com')
+      expect(attributes).to.eql(id: 1, name: 'Admin', email: 'peter@parker.com')

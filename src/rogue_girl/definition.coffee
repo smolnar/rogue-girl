@@ -5,7 +5,7 @@ class RogueGirl.Definition
     @callback   = callback
     @attributes = {}
     @traits     = {}
-    @sequences  = {}
+    @sequences  = { id: 1 }
 
     @proxy = new RogueGirl.Definition.Proxy(@, @attributes)
 

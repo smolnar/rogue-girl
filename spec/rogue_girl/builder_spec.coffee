@@ -16,7 +16,7 @@ describe 'RogueGirl.Builder', ->
 
       callbacks = RogueGirl.Builder.populate('user', attributes)
 
-      expect(attributes).to.eql(id: 0, name: 'Peter', email: 'peter@parker.com')
+      expect(attributes).to.eql(id: 1, name: 'Peter', email: 'peter@parker.com')
       expect(callbacks.length).to.eql(0)
 
     it 'populates definition with custom params', ->
@@ -30,7 +30,7 @@ describe 'RogueGirl.Builder', ->
 
       callbacks = RogueGirl.Builder.populate('user', attributes)
 
-      expect(attributes).to.eql(id: 0, name: 'John', email: 'peter@parker.com')
+      expect(attributes).to.eql(id: 1, name: 'John', email: 'peter@parker.com')
       expect(callbacks.length).to.eql(0)
 
     context 'when no definition found', ->
@@ -53,7 +53,7 @@ describe 'RogueGirl.Builder', ->
 
       @driver
         .expects('build')
-        .withExactArgs('user', id: 0, name: 'Peter', email: 'peter@peter.com')
+        .withExactArgs('user', id: 1, name: 'Peter', email: 'peter@peter.com')
         .once()
 
       user = RogueGirl.Builder.build('user')
@@ -71,7 +71,7 @@ describe 'RogueGirl.Builder', ->
 
       @driver
         .expects('build')
-        .withExactArgs('user', id: 0, name: 'Peter', email: 'peter@peter.com', permission: 'super', role: 'admin')
+        .withExactArgs('user', id: 1, name: 'Peter', email: 'peter@peter.com', permission: 'super', role: 'admin')
         .once()
 
       user = RogueGirl.Builder.build 'user', 'with permissions', 'with role'
@@ -86,7 +86,7 @@ describe 'RogueGirl.Builder', ->
 
       @driver
         .expects('build')
-        .withExactArgs('user', id: 0, name: 'John', email: 'peter@peter.com', permission: 'basic')
+        .withExactArgs('user', id: 1, name: 'John', email: 'peter@peter.com', permission: 'basic')
 
       RogueGirl.Builder.build 'user', 'with permission', name: 'John', permission: 'basic'
 
@@ -101,14 +101,14 @@ describe 'RogueGirl.Builder', ->
 
       @driver
         .expects('build')
-        .withExactArgs('user', id: 0, name: 'Peter 0', email: 'peter_0@peter.com', permission: 'super', role: 'admin 0')
+        .withExactArgs('user', id: 1, name: 'Peter 0', email: 'peter_0@peter.com', permission: 'super', role: 'admin 0')
         .once()
 
       user = RogueGirl.Builder.build 'user', 'with permissions'
 
       @driver
         .expects('build')
-        .withExactArgs('user', id: 1, name: 'Peter 1', email: 'peter_1@peter.com', permission: 'super', role: 'admin 1')
+        .withExactArgs('user', id: 2, name: 'Peter 1', email: 'peter_1@peter.com', permission: 'super', role: 'admin 1')
         .once()
 
       user = RogueGirl.Builder.build 'user', 'with permissions'
@@ -124,12 +124,12 @@ describe 'RogueGirl.Builder', ->
         @association 'role', name: 'basic'
 
       @role = mock(get: ->)
-      @user = { id: 0, name: 'Peter 0', email: 'peter_0@peter.com', role: @role.object }
+      @user = { id: 1, name: 'Peter 0', email: 'peter_0@peter.com', role: @role.object }
 
       @driver
         .expects('build')
         .withExactArgs('user',
-          id: 0
+          id: 1
           name: 'Peter 0'
           email: 'peter_0@peter.com'
           role:
@@ -176,12 +176,12 @@ describe 'RogueGirl.Builder', ->
         .returns(20)
         .once()
 
-      @user = { id: 0, name: 'Peter 0', email: 'peter_0@peter.com', role: @role.object }
+      @user = { id: 1, name: 'Peter 0', email: 'peter_0@peter.com', role: @role.object }
 
       @driver
         .expects('build')
         .withExactArgs('user',
-          id: 0
+          id: 1
           name: 'Peter 0'
           email: 'peter_0@peter.com'
           role:
