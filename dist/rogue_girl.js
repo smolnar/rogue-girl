@@ -696,7 +696,7 @@ exports = typeof(global) !== 'undefined' ? global : this
 
     VERSION.MAJOR = 0;
 
-    VERSION.MINOR = 1;
+    VERSION.MINOR = 2;
 
     VERSION.PATCH = 1;
 
@@ -805,7 +805,9 @@ exports = typeof(global) !== 'undefined' ? global : this
       this.callback = callback;
       this.attributes = {};
       this.traits = {};
-      this.sequences = {};
+      this.sequences = {
+        id: 1
+      };
       this.proxy = new RogueGirl.Definition.Proxy(this, this.attributes);
       this.proxy.define(function() {
         return this.sequence('id', function(n) {
@@ -1002,7 +1004,7 @@ exports = typeof(global) !== 'undefined' ? global : this
       associations = [];
       for (name in attributes) {
         value = attributes[name];
-        if (value.__association__ != null) {
+        if ((value != null) && (value.__association__ != null)) {
           associations.push(value.__association__);
           delete attributes[name];
         }
