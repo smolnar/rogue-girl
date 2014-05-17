@@ -6,12 +6,9 @@ class RogueGirl.Builder
     type       = params.type
     traits     = params.traits
     attributes = params.attributes
-    callbacks  = RogueGirl.Builder.populate(name, attributes, traits)
-    record     = RogueGirl.driver.build(type, attributes)
 
-    callback(record) for callback in callbacks
-
-    record
+    RogueGirl.Builder.populate(name, attributes, traits)
+    RogueGirl.driver.build(type, attributes)
 
   @populate: (name, attributes, traits) ->
     definition = RogueGirl.Definitions.of(name)

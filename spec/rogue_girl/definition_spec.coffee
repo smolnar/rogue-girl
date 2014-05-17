@@ -1,6 +1,10 @@
 #= require spec_helper
 
 describe 'RogueGirl.Definition', ->
+  beforeEach ->
+    RogueGirl.define 'role', ->
+    RogueGirl.define 'awesome role', type: 'role', ->
+
   it 'defines field value', ->
     definition = new RogueGirl.Definition 'user', {}, (f) ->
       f.name = 'Peter'
@@ -59,8 +63,9 @@ describe 'RogueGirl.Definition', ->
 
     attribute = definition.attributes.role
 
-    expect(attribute.type).to.eql('role')
-    expect(attribute.target).to.eql('user')
+    expect(attribute.name).to.eql('role')
+    expect(attribute.parent).to.eql('role')
+    expect(attribute.child).to.eql('user')
     expect(attribute.params[0]).to.eql('role')
     expect(attribute.params.length).to.eql(1)
 
@@ -73,23 +78,35 @@ describe 'RogueGirl.Definition', ->
 
     attribute = definition.attributes.role
 
-    expect(attribute.type).to.eql('role')
-    expect(attribute.target).to.eql('user')
+    expect(attribute.name).to.eql('role')
+    expect(attribute.parent).to.eql('role')
+    expect(attribute.child).to.eql('user')
     expect(attribute.params[0]).to.eql('role')
     expect(attribute.params.length).to.eql(1)
 
     attribute = definition.traits.admin.role
 
-    expect(attribute.type).to.eql('role')
-    expect(attribute.target).to.eql('user')
+    expect(attribute.name).to.eql('role')
+    expect(attribute.parent).to.eql('role')
+    expect(attribute.child).to.eql('user')
     expect(attribute.params[0]).to.eql('role')
     expect(attribute.params[1]).to.eql(name: 'admin')
     expect(attribute.params.length).to.eql(2)
 
+  it 'defines an association with custom name', ->
+    definition = new RogueGirl.Definition 'user', {}, (f) ->
+      @association 'awesome role'
+
+    attribute = definition.attributes['awesome role']
+
+    expect(attribute.name).to.eql('awesome role')
+    expect(attribute.parent).to.eql('role')
+    expect(attribute.child).to.eql('user')
+    expect(attribute.params[0]).to.eql('awesome role')
+    expect(attribute.params.length).to.eql(1)
 
   describe '#buildAttributes', ->
     beforeEach ->
-      @driver  = mock('RogueGirl.driver', translateAssociation: (->))
       @factory = mock('RogueGirl.Factory', create: ->)
 
     it 'builds attributes', ->
@@ -110,12 +127,6 @@ describe 'RogueGirl.Definition', ->
         .returns(@record.object)
         .once()
 
-      @driver
-        .expects('translateAssociation')
-        .withExactArgs('permission')
-        .returns('permissionId')
-        .once()
-
       @record.mock
         .expects('get')
         .withExactArgs('id')
@@ -125,7 +136,16 @@ describe 'RogueGirl.Definition', ->
       attributes = {}
       callbacks  = definition.buildAttributes(attributes)
 
-      expect(attributes).to.eql(id: 0, name: 'Peter', email: 'peter_0@parker.com', permissionId: 1)
+      expect(attributes).to.eql(
+        id: 0
+        name: 'Peter'
+        email: 'peter_0@parker.com'
+        permission:
+          __association__:
+            parent: 'permission'
+            child:  'user'
+            record: @record.object
+      )
       expect(callbacks.length).to.eql(1)
 
     it 'builds attributes with traits', ->

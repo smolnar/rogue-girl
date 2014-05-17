@@ -1,3 +1,4 @@
+#= require inflection
 #= require rogue_girl/exports
 #= require rogue_girl/base
 #= require rogue_girl/version
@@ -8,4 +9,6 @@
 #= require rogue_girl/definitions
 #= require rogue_girl/attribute
 #= require rogue_girl/association
+#= require rogue_girl/drivers/abstract_driver
+#= require rogue_girl/drivers/default_driver
 #= require rogue_girl/drivers/ember_store_driver

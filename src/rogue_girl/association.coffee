@@ -1,23 +1,26 @@
 class RogueGirl.Association
-  constructor: (type, target, params) ->
-    @type   = type
-    @target = target
+  constructor: (name, parent, child, params) ->
+    @name   = name
+    @parent = parent
+    @child  = child
     @params = params
 
   build: (attributes) ->
-    parent = null
+    record = null
 
-    if attributes[@type]
-      parent = attributes[@type]
+    if attributes[@name]
+      record = attributes[@name]
 
-      delete attributes[@type]
+      delete attributes[@name]
     else
-      parent = RogueGirl.Factory.create.apply(null, @params)
+      record = RogueGirl.Factory.create.apply(null, @params)
 
-    parent_id = if parent.id? then parent.id else parent.get?('id')
+    parent_id = if record.id? then record.id else record.get?('id')
 
-    throw new Error("Could not resolve 'parent_id' for ##{parent}") unless parent_id?
+    throw new Error("Could not resolve 'parent_id' for ##{record}") unless parent_id?
 
-    attributes[RogueGirl.driver.translateAssociation(@type)] = parent_id
-
-    (child) => RogueGirl.driver.createAssociation(parent, child, @target)
+    attributes[@parent] =
+      __association__:
+        parent: @parent
+        child:  @child
+        record: record

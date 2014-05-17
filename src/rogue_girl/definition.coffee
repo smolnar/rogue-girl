@@ -69,4 +69,4 @@ class RogueGirl.Definition.Proxy
 
     throw new Error("There is no definition for '#{name}'") unless definition
 
-    @attributes[name] = new RogueGirl.Association(definition.type, @base.type, arguments)
+    @attributes[name] = new RogueGirl.Association(definition.name, definition.type, @base.type, arguments)

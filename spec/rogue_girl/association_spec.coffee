@@ -4,13 +4,12 @@ describe 'RogueGirl.Association', ->
   describe '#build', ->
     beforeEach ->
       @factory = mock('RogueGirl.Factory', create: ->)
-      @driver  = mock('RogueGirl.driver', translateAssociation: (->), createAssociation: (->))
 
     it 'builds an association with new record', ->
       @parent = mock(get: ->)
       @child  = mock(get: ->)
 
-      association = new RogueGirl.Association('role', 'user', ['role'])
+      association = new RogueGirl.Association('role', 'role', 'user', ['role'])
 
       @factory
         .expects('create')
@@ -24,30 +23,41 @@ describe 'RogueGirl.Association', ->
         .returns(1)
         .once()
 
-      @driver
-        .expects('translateAssociation')
-        .withExactArgs('role')
-        .returns('roleId')
+      attributes = {}
+      callback   = association.build(attributes)
+      attribute  = attributes.role.__association__
+
+      expect(attribute).to.eql(parent: 'role', child: 'user', record: @parent.object)
+
+    it 'builds an association by different name', ->
+      @parent = mock(get: ->)
+      @child  = mock(get: ->)
+
+      association = new RogueGirl.Association('awesome role', 'role', 'user', ['awesome role'])
+
+      @factory
+        .expects('create')
+        .withExactArgs('awesome role')
+        .returns(@parent.object)
         .once()
 
-      @driver
-        .expects('createAssociation')
-        .withExactArgs(@parent.object, @child.object, 'user')
-        .once(0)
+      @parent.mock
+        .expects('get')
+        .withExactArgs('id')
+        .returns(1)
+        .once()
 
       attributes = {}
       callback   = association.build(attributes)
+      attribute  = attributes.role.__association__
 
-      expect(attributes).to.eql(roleId: 1)
-      expect(typeof callback).to.eql('function')
-
-      callback(@child.object)
+      expect(attribute).to.eql(parent: 'role', child: 'user', record: @parent.object)
 
     it 'builds an association with custom attributes', ->
       @parent = mock(get: ->)
       @child  = mock(get: ->)
 
-      association = new RogueGirl.Association('role', 'user', ['role', 'as admin', name: 'Admin'])
+      association = new RogueGirl.Association('role', 'role', 'user', ['role', 'as admin', name: 'Admin'])
 
       @factory
         .expects('create')
@@ -61,29 +71,17 @@ describe 'RogueGirl.Association', ->
         .returns(1)
         .once()
 
-      @driver
-        .expects('translateAssociation')
-        .withExactArgs('role')
-        .returns('roleId')
-
-      @driver
-        .expects('createAssociation')
-        .withExactArgs(@parent.object, @child.object, 'user')
-        .once()
-
       attributes = {}
       callback   = association.build(attributes)
+      attribute  = attributes.role.__association__
 
-      expect(attributes).to.eql(roleId: 1)
-      expect(typeof callback).to.eql('function')
-
-      callback(@child.object)
+      expect(attribute).to.eql(parent: 'role', child: 'user', record: @parent.object)
 
     it 'builds an association with existing record', ->
       @parent = mock(get: ->)
       @child  = mock(get: ->)
 
-      association = new RogueGirl.Association('role', 'user', ['role', 'as admin', name: 'Admin'])
+      association = new RogueGirl.Association('role', 'role', 'user', ['role', 'as admin', name: 'Admin'])
 
       @parent.mock
         .expects('get')
@@ -91,27 +89,15 @@ describe 'RogueGirl.Association', ->
         .returns(2)
         .once()
 
-      @driver
-        .expects('translateAssociation')
-        .withExactArgs('role')
-        .returns('roleId')
-
-      @driver
-        .expects('createAssociation')
-        .withExactArgs(@parent.object, @child.object, 'user')
-        .once()
-
       attributes = { role: @parent.object }
-      callback = association.build(attributes)
+      callback   = association.build(attributes)
+      attribute  = attributes.role.__association__
 
-      expect(attributes).to.eql(roleId: 2)
-      expect(typeof callback).to.eql('function')
-
-      callback(@child.object)
+      expect(attribute).to.eql(parent: 'role', child: 'user', record: @parent.object)
 
     context 'when parent has no id property', ->
       it 'throws an error', ->
-        association = new RogueGirl.Association('role', 'user', ['role', 'as admin', name: 'Admin'])
+        association = new RogueGirl.Association('role', 'role', 'user', ['role', 'as admin', name: 'Admin'])
 
         attributes = {}
 

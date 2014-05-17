@@ -40,7 +40,7 @@ describe 'RogueGirl.Builder', ->
   describe '#build', ->
     beforeEach ->
       @factory = mock('RogueGirl.Factory', create: (->))
-      @driver  = mock('RogueGirl.driver', build: (->), translateAssociation: (->), createAssociation: (->))
+      @driver  = mock('RogueGirl.driver', build: (->))
 
     it 'builds record', ->
       RogueGirl.define 'user', (f) ->
@@ -123,15 +123,23 @@ describe 'RogueGirl.Builder', ->
 
         @association 'role', name: 'basic'
 
-      @user = { id: 0, name: 'Peter 0', email: 'peter_0@peter.com', roleId: 0 }
+      @role = mock(get: ->)
+      @user = { id: 0, name: 'Peter 0', email: 'peter_0@peter.com', role: @role.object }
 
       @driver
         .expects('build')
-        .withExactArgs('user', id: 0, name: 'Peter 0', email: 'peter_0@peter.com', roleId: 0)
+        .withExactArgs('user',
+          id: 0
+          name: 'Peter 0'
+          email: 'peter_0@peter.com'
+          role:
+            __association__:
+              parent: 'role'
+              child:  'user'
+              record: @role.object
+        )
         .returns(@user)
         .once()
-
-      @role = mock(get: ->)
 
       @role.mock
         .expects('get')
@@ -143,17 +151,6 @@ describe 'RogueGirl.Builder', ->
         .expects('create')
         .withExactArgs('role', name: 'basic')
         .returns(@role.object)
-        .once()
-
-      @driver
-        .expects('translateAssociation')
-        .withExactArgs('role')
-        .returns('roleId')
-        .once()
-
-      @driver
-        .expects('createAssociation')
-        .withExactArgs(@role.object, @user, 'user')
         .once()
 
       RogueGirl.Builder.build 'user'
@@ -179,23 +176,21 @@ describe 'RogueGirl.Builder', ->
         .returns(20)
         .once()
 
-      @user = { id: 0, name: 'Peter 0', email: 'peter_0@peter.com', roleId: 20 }
+      @user = { id: 0, name: 'Peter 0', email: 'peter_0@peter.com', role: @role.object }
 
       @driver
         .expects('build')
-        .withExactArgs('user', id: 0, name: 'Peter 0', email: 'peter_0@peter.com', roleId: 20)
+        .withExactArgs('user',
+          id: 0
+          name: 'Peter 0'
+          email: 'peter_0@peter.com'
+          role:
+            __association__:
+              parent: 'role'
+              child: 'user'
+              record: @role.object
+        )
         .returns(@user)
-        .once()
-
-      @driver
-        .expects('translateAssociation')
-        .withExactArgs('role')
-        .returns('roleId')
-        .once()
-
-      @driver
-        .expects('createAssociation')
-        .withExactArgs(@role.object, @user, 'user')
         .once()
 
       RogueGirl.Builder.build 'user', role: @role.object

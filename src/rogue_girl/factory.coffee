@@ -8,6 +8,3 @@ class RogueGirl.Factory
     RogueGirl.driver.save(record)
 
     record
-
-  @createAssociation: ->
-    RogueGirl.driver.associationFor.apply(null, arguments)
