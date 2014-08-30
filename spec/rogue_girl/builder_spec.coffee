@@ -76,6 +76,19 @@ describe 'RogueGirl.Builder', ->
 
       user = RogueGirl.Builder.build 'user', 'with permissions', 'with role'
 
+    context 'with custom name of definition', ->
+      it 'uses proper type of record for build', ->
+        RogueGirl.define 'customUser', type: 'user', (f) ->
+          f.name  = 'Peter'
+          f.email = 'peter@peter.com'
+
+        @driver
+          .expects('build')
+          .withExactArgs('user', id: 1, name: 'Peter', email: 'peter@peter.com')
+          .once()
+
+        RogueGirl.Builder.build 'customUser'
+
     it 'creates record with custom parameters', ->
       RogueGirl.define 'user', (f) ->
         f.name  = 'Peter'

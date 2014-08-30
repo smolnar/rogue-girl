@@ -734,10 +734,11 @@ exports = typeof(global) !== 'undefined' ? global : this
     function Builder() {}
 
     Builder.build = function() {
-      var attributes, name, params, traits, type;
+      var attributes, definition, name, params, traits, type;
       params = RogueGirl.Parser.parse(arguments);
       name = params.name;
-      type = params.type;
+      definition = RogueGirl.Definitions.of(name);
+      type = definition.type;
       traits = params.traits;
       attributes = params.attributes;
       RogueGirl.Builder.populate(name, attributes, traits);

@@ -1,9 +1,9 @@
 class RogueGirl.Builder
   @build: ->
-    params = RogueGirl.Parser.parse(arguments)
-
+    params     = RogueGirl.Parser.parse(arguments)
     name       = params.name
-    type       = params.type
+    definition = RogueGirl.Definitions.of(name)
+    type       = definition.type
     traits     = params.traits
     attributes = params.attributes
 
