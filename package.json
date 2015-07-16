@@ -8,11 +8,11 @@
   },
   "author": "Samuel Molnar <molnar.samuel@gmail.com>",
   "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "chai": ">= 1.9.1",
     "mocha": ">= 1.18.2",
     "sinon": "*",
     "testem": "*"
-  }
+  },
+  "devDependencies": {}
 }
