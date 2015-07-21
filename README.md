@@ -9,7 +9,7 @@ Currently, only Ember.js models are supported.
 Let's define a model &ndash; *User*.
 
 ```coffeescript
-RougeGirl.define 'user', (f) ->
+RogueGirl.define 'user', (f) ->
  f.name = 'Peter'
  
 # Let's create records
@@ -21,7 +21,7 @@ We want some fields to be unique and change with every instance. Make use of seq
 
 
 ```coffeescript
-RougeGirl.define 'user', (f) ->
+RogueGirl.define 'user', (f) ->
  f.name = 'Peter'
  
  @sequence 'number', (n) -> "Number ##{n}"
@@ -30,7 +30,7 @@ RougeGirl.define 'user', (f) ->
 Do you want to have customized states of the records? Let's be dry and use traits.
 
 ```coffeescript
-RougeGirl.define 'user', (f) ->
+RogueGirl.define 'user', (f) ->
  f.name = 'Peter'
  
  @sequence 'number', (n) -> "Number ##{n}"
@@ -53,7 +53,7 @@ RogueGirl.define 'role', (f) ->
     f.name = 'Admin'
 
     
-RougeGirl.define 'user', (f) ->
+RogueGirl.define 'user', (f) ->
  f.name = 'Peter'
  
  @association 'role'
